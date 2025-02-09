@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Will You Be My Valentine?</title>
+    <link rel="icon" href="cute1.gif" type="image/x-icon">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            min-height: 100vh;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background-color: #ffe6e6;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            text-align: center;
+            padding: 1rem;
+        }
+
+        .container {
+            background-color: white;
+            padding: clamp(1rem, 5vw, 2rem);
+            border-radius: 20px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            width: min(90%, 500px);
+            margin: auto;
+        }
+
+        h1 {
+            color: #ff4d6d;
+            margin-bottom: 1rem;
+            font-size: clamp(1.5rem, 5vw, 2rem);
+            line-height: 1.2;
+        }
+
+        .buttons {
+            margin-top: 2rem;
+            display: flex;
+            justify-content: center;
+            gap: clamp(0.5rem, 3vw, 1rem);
+            flex-wrap: wrap;
+        }
+
+        button {
+            padding: clamp(0.5rem, 3vw, 1rem) clamp(1rem, 5vw, 2rem);
+            font-size: clamp(1rem, 4vw, 1.2rem);
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: transform 0.2s, background-color 0.2s;
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        #yesBtn {
+            background-color: #ff4d6d;
+            color: white;
+            min-width: 100px;
+        }
+
+        #yesBtn:hover, #yesBtn:focus {
+            transform: scale(1.1);
+            background-color: #ff3355;
+        }
+
+        #noBtn {
+            background-color: #b9b9b9;
+            color: #343a40;
+            min-width: 100px;
+        }
+
+        .hearts {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+            top: 0;
+            left: 0;
+        }
+
+        img {
+            width: min(200px, 80%);
+            height: auto;
+            margin: 1rem auto;
+            display: block;
+        }
+
+        /* Accessibility improvements */
+        button:focus {
+            outline: 3px solid #4a90e2;
+            outline-offset: 2px;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            button {
+                transition: none;
+            }
+            .heart {
+                animation: none !important;
+            }
+        }
+
+        /* Success message styling */
+        .success-message {
+            font-size: clamp(1rem, 4vw, 1.2rem);
+            color: #ff4d6d;
+            margin-top: 1rem;
+            line-height: 1.4;
+        }
+    </style>
+</head>
+<body>
+    <div class="hearts" id="hearts" aria-hidden="true"></div>
+    <main class="container" role="main">
+        <h1>Will You Be My Valentine? 💖</h1>
+        <img src="cute2.gif" alt="Cute Valentine's Bear" />
+        <div class="buttons">
+            <button id="yesBtn" aria-label="Accept Valentine's proposal">Yes</button>
+            <button id="noBtn" aria-label="Decline Valentine's proposal">No</button>
+        </div>
+    </main>
+
+    <script>
+        const noBtn = document.getElementById('noBtn');
+        const yesBtn = document.getElementById('yesBtn');
+        const container = document.querySelector('.container');
+        
+        // Make the "No" button run away from cursor/touch
+        function moveButton(e) {
+            const maxWidth = window.innerWidth - noBtn.offsetWidth;
+            const maxHeight = window.innerHeight - noBtn.offsetHeight;
+            
+            // Ensure button stays within viewport
+            const x = Math.min(Math.max(20, Math.random() * maxWidth), maxWidth - 20);
+            const y = Math.min(Math.max(20, Math.random() * maxHeight), maxHeight - 20);
+            
+            noBtn.style.position = 'fixed';
+            noBtn.style.left = x + 'px';
+            noBtn.style.top = y + 'px';
+        }
+
+        noBtn.addEventListener('mouseover', moveButton);
+        noBtn.addEventListener('touchstart', moveButton);
+
+        // Celebration when "Yes" is clicked
+        yesBtn.addEventListener('click', celebrate);
+        yesBtn.addEventListener('touchend', celebrate);
+
+        function celebrate(e) {
+            e.preventDefault();
+            
+            // Hide the no button
+            noBtn.style.display = 'none';
+            
+            // Change the content
+            container.innerHTML = `
+                <h1>Yay! 🎉💖</h1>
+                <img src="cute.gif" alt="Happy Valentine's Bear" />
+                <p class="success-message">I knew you'd say yes!</p>
+            `;
+            
+            // Check if user prefers reduced motion
+            const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+            
+            if (!prefersReducedMotion) {
+                createHearts();
+            }
+        }
+
+        function createHearts() {
+            const heartsContainer = document.getElementById('hearts');
+            const numberOfHearts = Math.min(50, Math.floor(window.innerWidth / 20));
+            
+            for(let i = 0; i < numberOfHearts; i++) {
+                setTimeout(() => {
+                    const heart = document.createElement('div');
+                    heart.innerHTML = '❤️';
+                    heart.style.position = 'fixed';
+                    heart.style.left = Math.random() * 100 + 'vw';
+                    heart.style.top = '-20px';
+                    heart.style.fontSize = clamp(10, Math.random() * 20 + 10, 30) + 'px';
+                    heart.style.animation = `fall ${Math.random() * 3 + 2}s linear`;
+                    heart.style.opacity = Math.random();
+                    heart.className = 'heart';
+                    
+                    heartsContainer.appendChild(heart);
+                    
+                    setTimeout(() => {
+                        heart.remove();
+                    }, 5000);
+                }, i * 100);
+            }
+        }
+
+        function clamp(min, value, max) {
+            return Math.min(Math.max(min, value), max);
+        }
+
+        // Add falling hearts animation
+        document.head.insertAdjacentHTML('beforeend', `
+            <style>
+                @keyframes fall {
+                    to {
+                        transform: translateY(100vh) rotate(360deg);
+                    }
+                }
+            </style>
+        `);
+    </script>
+</body>
+</html>
